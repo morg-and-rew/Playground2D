@@ -1,0 +1,30 @@
+fileFormatVersion: 2
+guid: 8944d606937fd0048a0082857f4ad526
+TrueTypeFontImporter:
+  externalObjects: {}
+  serializedVersion: 4
+  fontSize: 16
+  forceTextureCase: -2
+  characterSpacing: 0
+  characterPadding: 1
+  includeFontData: 1
+  fontName: Square721 BT
+  fontNames:
+  - Square721 BT
+  fallbackFontReferences: []
+  customCharacters: 
+  fontRenderingMode: 0
+  ascentCalculationMode: 1
+  useLegacyBoundsCalculation: 0
+  shouldRoundAdvanceValue: 1
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 182007
+  packageName: Casual SCI-FI GUI Pack-Vertical Mobile
+  packageVersion: 1.1
+  assetPath: Assets/Casual SCI-FI GUI Pack-Vertical Mobile/Casual SCI-FI GUI Blue/Casual
+    SCI-FI GUI Blue Resources/Fonts/tt0246m_.ttf
+  uploadId: 522631
