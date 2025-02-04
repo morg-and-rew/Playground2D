@@ -2,20 +2,22 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class GameStats : MonoBehaviour//, ICollectble
+public class GameStats : MonoBehaviour, ICollectble
 {
     [field: SerializeField] public int _biofluidForm { get; private set; } = 0;
     [field: SerializeField] public int _darkEnergyForm { get; private set; } = 0;
     [field: SerializeField] public int _photonFlowForm { get; private set; } = 0;
     [field: SerializeField] public int _starPlasmaForm { get; private set; } = 0;
+    [field: SerializeField] public int _antiMaterial { get; private set; } = 0;
 
     public delegate void FormChanged(float newValue);
     public static event FormChanged OnBiofluidFormChanged;
     public static event FormChanged OnDarkEnergyFormChanged;
     public static event FormChanged OnPhotonFlowFormChanged;
     public static event FormChanged OnStarPlasmaFormChanged;
+    public static event FormChanged OnAntiMaterialChanged;
 
-    public void CollectForm(int biofluid, int darkEnergy, int photonFlow, int starPlasma)
+    public void CollectForm(int biofluid = 0, int darkEnergy = 0, int photonFlow = 0, int starPlasma = 0, int antiMaterial = 0)
     {
         if (biofluid > 0)
         {
@@ -39,6 +41,12 @@ public class GameStats : MonoBehaviour//, ICollectble
         {
             _starPlasmaForm += starPlasma;
             OnStarPlasmaFormChanged?.Invoke(_starPlasmaForm);
+        }
+
+        if (antiMaterial > 0)
+        {
+            _antiMaterial += antiMaterial;
+            OnAntiMaterialChanged?.Invoke(_antiMaterial);
         }
     }
 }

@@ -10,7 +10,7 @@ namespace Playground2D.Forms.Biofluid
 
         public void Collect(ICollectble collector)
         {
-            collector.CollectForm(_coinValue);
+            //collector.CollectForm(_coinValue);
         }
     }
 }

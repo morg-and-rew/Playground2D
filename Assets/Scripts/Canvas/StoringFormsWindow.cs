@@ -3,9 +3,9 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 
-namespace Playground2D.Canvas.GameWindows
+namespace Playground2D.Canvas.StoringFormsWindows
 {
-    public class GameWindow : MonoBehaviour
+    public class StoringFormsWindow : MonoBehaviour
     {
         [SerializeField] private Text biofluidText;
         [SerializeField] private Text darkEnergyText;
