@@ -1,3 +1,4 @@
+using Playground2D.Game.Stats;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -7,10 +8,12 @@ namespace Playground2D.Canvas.StoringFormsWindows
 {
     public class StoringFormsWindow : MonoBehaviour
     {
-        [SerializeField] private Text biofluidText;
-        [SerializeField] private Text darkEnergyText;
-        [SerializeField] private Text photonFlowText;
-        [SerializeField] private Text starPlasmaText;
+        [SerializeField] private Text _biofluidText;
+        [SerializeField] private Text _darkEnergyText;
+        [SerializeField] private Text _photonFlowText;
+        [SerializeField] private Text _starPlasmaText;
+
+        [SerializeField] private GameStats _gameStats;
 
         private void OnEnable()
         {
@@ -18,6 +21,11 @@ namespace Playground2D.Canvas.StoringFormsWindows
             GameStats.OnDarkEnergyFormChanged += UpdateDarkEnergyText;
             GameStats.OnPhotonFlowFormChanged += UpdatePhotonFlowText;
             GameStats.OnStarPlasmaFormChanged += UpdateStarPlasmaText;
+
+            _biofluidText.text = _gameStats._biofluidForm.ToString();
+            _darkEnergyText.text = _gameStats._darkEnergyForm.ToString();
+            _photonFlowText.text = _gameStats._photonFlowForm.ToString();
+            _starPlasmaText.text = _gameStats._starPlasmaForm.ToString();
         }
 
         private void OnDisable()
@@ -28,35 +36,35 @@ namespace Playground2D.Canvas.StoringFormsWindows
             GameStats.OnStarPlasmaFormChanged -= UpdateStarPlasmaText;
         }
 
-        private void UpdateBiofluidText(float newValue)
+        private void UpdateBiofluidText(int newValue)
         {
-            if (biofluidText != null)
+            if (_biofluidText != null)
             {
-                biofluidText.text = newValue.ToString();
+                _biofluidText.text = newValue.ToString();
             }
         }
 
-        private void UpdateDarkEnergyText(float newValue)
+        private void UpdateDarkEnergyText(int newValue)
         {
-            if (darkEnergyText != null)
+            if (_darkEnergyText != null)
             {
-                darkEnergyText.text = newValue.ToString();
+                _darkEnergyText.text = newValue.ToString();
             }
         }
 
-        private void UpdatePhotonFlowText(float newValue)
+        private void UpdatePhotonFlowText(int newValue)
         {
-            if (photonFlowText != null)
+            if (_photonFlowText != null)
             {
-                photonFlowText.text = newValue.ToString();
+                _photonFlowText.text = newValue.ToString();
             }
         }
 
-        private void UpdateStarPlasmaText(float newValue)
+        private void UpdateStarPlasmaText(int newValue)
         {
-            if (starPlasmaText != null)
+            if (_starPlasmaText != null)
             {
-                starPlasmaText.text = newValue.ToString();
+                _starPlasmaText.text = newValue.ToString();
             }
         }
     }

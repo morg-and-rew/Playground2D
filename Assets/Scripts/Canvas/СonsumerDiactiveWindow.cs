@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.EventSystems;
+using Playground2D.Game.Stats;
 
 namespace Playground2D.Canvas.GameWindows
 {
@@ -21,16 +22,13 @@ namespace Playground2D.Canvas.GameWindows
         [SerializeField] private Button _photonFlowDecreaseButton;
         [SerializeField] private Button _starPlasmaIncreaseButton;
         [SerializeField] private Button _starPlasmaDecreaseButton;
-        [SerializeField] private Button _closeButton;
-        [SerializeField] private Button _infoButton;
-        [SerializeField] private GameObject _infoPanel;
+
+        [SerializeField]private GameStats _gameStats;
 
         private int _biofluidValue = 0;
         private int _darkEnergyValue = 0;
         private int _photonFlowValue = 0;
         private int _starPlasmaValue = 0;
-
-        private const int _maxValue = 30;
 
         private bool _isBiofluidIncreasePressed = false;
         private bool _isBiofluidDecreasePressed = false;
@@ -41,8 +39,10 @@ namespace Playground2D.Canvas.GameWindows
         private bool _isStarPlasmaIncreasePressed = false;
         private bool _isStarPlasmaDecreasePressed = false;
 
+
         private void Start()
         {
+
             _biofluidIncreaseButton.onClick.AddListener(IncreaseBiofluid);
             _biofluidDecreaseButton.onClick.AddListener(DecreaseBiofluid);
             _darkEnergyIncreaseButton.onClick.AddListener(IncreaseDarkEnergy);
@@ -51,8 +51,6 @@ namespace Playground2D.Canvas.GameWindows
             _photonFlowDecreaseButton.onClick.AddListener(DecreasePhotonFlow);
             _starPlasmaIncreaseButton.onClick.AddListener(IncreaseStarPlasma);
             _starPlasmaDecreaseButton.onClick.AddListener(DecreaseStarPlasma);
-            _closeButton.onClick.AddListener(CloseWindow);
-            _infoButton.onClick.AddListener(ToggleInfoPanel);
 
             UpdateTexts();
         }
@@ -61,7 +59,7 @@ namespace Playground2D.Canvas.GameWindows
         {
             if (_isBiofluidIncreasePressed)
             {
-                _biofluidValue = _maxValue;
+                _biofluidValue = _gameStats._biofluidForm;
                 UpdateTexts();
             }
             if (_isBiofluidDecreasePressed)
@@ -71,7 +69,7 @@ namespace Playground2D.Canvas.GameWindows
             }
             if (_isDarkEnergyIncreasePressed)
             {
-                _darkEnergyValue = _maxValue;
+                _darkEnergyValue = _gameStats._darkEnergyForm;
                 UpdateTexts();
             }
             if (_isDarkEnergyDecreasePressed)
@@ -81,7 +79,7 @@ namespace Playground2D.Canvas.GameWindows
             }
             if (_isPhotonFlowIncreasePressed)
             {
-                _photonFlowValue = _maxValue;
+                _photonFlowValue = _gameStats._photonFlowForm;
                 UpdateTexts();
             }
             if (_isPhotonFlowDecreasePressed)
@@ -91,7 +89,7 @@ namespace Playground2D.Canvas.GameWindows
             }
             if (_isStarPlasmaIncreasePressed)
             {
-                _starPlasmaValue = _maxValue;
+                _starPlasmaValue = _gameStats._starPlasmaForm;
                 UpdateTexts();
             }
             if (_isStarPlasmaDecreasePressed)
@@ -103,7 +101,7 @@ namespace Playground2D.Canvas.GameWindows
 
         private void IncreaseBiofluid()
         {
-            _biofluidValue = Mathf.Min(_biofluidValue + 1, _maxValue);
+            _biofluidValue = Mathf.Min(_biofluidValue + 1, _gameStats._biofluidForm);
             UpdateTexts();
         }
 
@@ -115,7 +113,7 @@ namespace Playground2D.Canvas.GameWindows
 
         private void IncreaseDarkEnergy()
         {
-            _darkEnergyValue = Mathf.Min(_darkEnergyValue + 1, _maxValue);
+            _darkEnergyValue = Mathf.Min(_darkEnergyValue + 1, _gameStats._darkEnergyForm);
             UpdateTexts();
         }
 
@@ -127,7 +125,7 @@ namespace Playground2D.Canvas.GameWindows
 
         private void IncreasePhotonFlow()
         {
-            _photonFlowValue = Mathf.Min(_photonFlowValue + 1, _maxValue);
+            _photonFlowValue = Mathf.Min(_photonFlowValue + 1, _gameStats._photonFlowForm);
             UpdateTexts();
         }
 
@@ -139,7 +137,7 @@ namespace Playground2D.Canvas.GameWindows
 
         private void IncreaseStarPlasma()
         {
-            _starPlasmaValue = Mathf.Min(_starPlasmaValue + 1, _maxValue);
+            _starPlasmaValue = Mathf.Min(_starPlasmaValue + 1, _gameStats._starPlasmaForm);
             UpdateTexts();
         }
 
@@ -151,20 +149,10 @@ namespace Playground2D.Canvas.GameWindows
 
         private void UpdateTexts()
         {
-            _biofluidText.text = $"{_biofluidValue}/{_maxValue}";
-            _darkEnergyText.text = $"{_darkEnergyValue}/{_maxValue}";
-            _photonFlowText.text = $"{_photonFlowValue}/{_maxValue}";
-            _starPlasmaText.text = $"{_starPlasmaValue}/{_maxValue}";
-        }
-
-        private void CloseWindow()
-        {
-            gameObject.SetActive(false);
-        }
-
-        private void ToggleInfoPanel()
-        {
-            _infoPanel.SetActive(!_infoPanel.activeSelf);
+            _biofluidText.text = $"{_biofluidValue}/{_gameStats._biofluidForm}";
+            _darkEnergyText.text = $"{_darkEnergyValue}/{_gameStats._darkEnergyForm}";
+            _photonFlowText.text = $"{_photonFlowValue}/{_gameStats._photonFlowForm}";
+            _starPlasmaText.text = $"{_starPlasmaValue}/{_gameStats._starPlasmaForm}";
         }
 
         public void OnPointerDown(PointerEventData eventData)
@@ -236,15 +224,6 @@ namespace Playground2D.Canvas.GameWindows
             else if (eventData.pointerPress == _starPlasmaDecreaseButton.gameObject)
             {
                 _isStarPlasmaDecreasePressed = false;
-            }
-        }
-
-        private void OnMouseDown()
-        {
-            // Если нажали в любом месте экрана, деактивируем информационное поле
-            if (!RectTransformUtility.RectangleContainsScreenPoint(_infoPanel.GetComponent<RectTransform>(), Input.mousePosition))
-            {
-                _infoPanel.SetActive(false);
             }
         }
     }

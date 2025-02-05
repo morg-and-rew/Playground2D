@@ -1,5 +1,5 @@
 public interface ICollectble
 {
-    public void CollectForm(int biofluid, int darkEnergy, int photonFlow, int starPlasma, int antiMaterial);
+    void CollectForm(int biofluid = 0, int darkEnergy = 0, int photonFlow = 0, int starPlasma = 0, int antiMaterial = 0);
 }
 

@@ -1,36 +1,48 @@
+using Playground2D.Game.Stats;
 using UnityEngine;
+using UnityEngine.UI;
 
-public interface IFormCollector
+namespace Playground2D.Canvas.StoreTokenWindows
 {
-    void CollectForm(int biofluid = 0, int darkEnergy = 0, int photonFlow = 0, int starPlasma = 0, int antiMaterial = 0);
-}
-
-public class StoreTokenWindow : MonoBehaviour
-{
-    private IFormCollector _formCollector;
-
-    public void Initialize(IFormCollector formCollector)
+    public class StoreTokenWindow : MonoBehaviour
     {
-        _formCollector = formCollector;
-    }
+        [SerializeField] GameStats _gameStats;
+        [SerializeField] private Text _antiMaterialText;
 
-    public void OnButton1Clicked()
-    {
-        _formCollector.CollectForm(antiMaterial: 5);
-    }
+        private void OnEnable()
+        {
+            GameStats.OnAntiMaterialChanged += UpdateAntiMaterialText;
+            _antiMaterialText.text = _gameStats._antiMaterial.ToString();
+        }
 
-    public void OnButton2Clicked()
-    {
-        _formCollector.CollectForm(antiMaterial: 10);
-    }
+        private void OnDisable()
+        {
+            GameStats.OnAntiMaterialChanged -= UpdateAntiMaterialText;
+        }
 
-    public void OnButton3Clicked()
-    {
-        _formCollector.CollectForm(antiMaterial: 15);
-    }
+        public void OnButton1Clicked()
+        {
+            _gameStats.CollectForm(antiMaterial: 5);
+        }
 
-    public void OnButton4Clicked()
-    {
-        _formCollector.CollectForm(antiMaterial: 20);
+        public void OnButton2Clicked()
+        {
+            _gameStats.CollectForm(antiMaterial: 10);
+        }
+
+        public void OnButton3Clicked()
+        {
+            _gameStats.CollectForm(antiMaterial: 15);
+        }
+
+        public void OnButton4Clicked()
+        {
+            _gameStats.CollectForm(antiMaterial: 20);
+        }
+
+        private void UpdateAntiMaterialText(int newValue)
+        {
+            _antiMaterialText.text = newValue.ToString();
+        }
     }
 }
