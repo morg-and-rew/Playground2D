@@ -1,18 +1,22 @@
-using System.Collections;
-using System.Collections.Generic;
+using Playground2D.Game.Stats;
+using Playground2D.ÑonsumerOblect;
 using UnityEngine;
 using UnityEngine.UI;
-using UnityEngine.EventSystems;
-using Playground2D.Game.Stats;
+using Playground2D.Tool.Time;
 
-namespace Playground2D.Canvas.GameWindows
+namespace Playground2D.Canvas.ÑonsumerWindow.Inactive
 {
-    public class Ð¡onsumerDiactiveWindow : MonoBehaviour, IPointerDownHandler, IPointerUpHandler
+    public class ConsumerInactiveWindow : MonoBehaviour
     {
         [SerializeField] private Text _biofluidText;
         [SerializeField] private Text _darkEnergyText;
         [SerializeField] private Text _photonFlowText;
         [SerializeField] private Text _starPlasmaText;
+
+        [SerializeField] private Text _biofluidPointsText;
+        [SerializeField] private Text _darkEnergyPointsText;
+        [SerializeField] private Text _photonFlowPointsText;
+        [SerializeField] private Text _starPlasmaPointsText;
 
         [SerializeField] private Button _biofluidIncreaseButton;
         [SerializeField] private Button _biofluidDecreaseButton;
@@ -22,209 +26,258 @@ namespace Playground2D.Canvas.GameWindows
         [SerializeField] private Button _photonFlowDecreaseButton;
         [SerializeField] private Button _starPlasmaIncreaseButton;
         [SerializeField] private Button _starPlasmaDecreaseButton;
+        [SerializeField] private Button _confirmButton;
 
-        [SerializeField]private GameStats _gameStats;
+        [SerializeField] private GameObject _objectToHide1;
+        [SerializeField] private GameObject _objectToHide2;
+        [SerializeField] private GameObject _objectToHide3;
+        [SerializeField] private GameObject _objectToShow1;
+        [SerializeField] private GameObject _objectToShow2;
+        [SerializeField] private Text _timerText;
 
         private int _biofluidValue = 0;
         private int _darkEnergyValue = 0;
         private int _photonFlowValue = 0;
         private int _starPlasmaValue = 0;
 
-        private bool _isBiofluidIncreasePressed = false;
-        private bool _isBiofluidDecreasePressed = false;
-        private bool _isDarkEnergyIncreasePressed = false;
-        private bool _isDarkEnergyDecreasePressed = false;
-        private bool _isPhotonFlowIncreasePressed = false;
-        private bool _isPhotonFlowDecreasePressed = false;
-        private bool _isStarPlasmaIncreasePressed = false;
-        private bool _isStarPlasmaDecreasePressed = false;
-
+        private Consumer _consumer;
+        private Timer _timer;
 
         private void Start()
         {
+            _consumer = FindObjectOfType<Consumer>();
+            _timer = gameObject.AddComponent<Timer>();
+            _timer.OnTimerUpdate += UpdateTimerText;
+            _timer.OnTimerComplete += OnTimerComplete;
+            _timer.duration = 10f; // Óñòàíîâèòå äëèòåëüíîñòü òàéìåðà
 
-            _biofluidIncreaseButton.onClick.AddListener(IncreaseBiofluid);
-            _biofluidDecreaseButton.onClick.AddListener(DecreaseBiofluid);
-            _darkEnergyIncreaseButton.onClick.AddListener(IncreaseDarkEnergy);
-            _darkEnergyDecreaseButton.onClick.AddListener(DecreaseDarkEnergy);
-            _photonFlowIncreaseButton.onClick.AddListener(IncreasePhotonFlow);
-            _photonFlowDecreaseButton.onClick.AddListener(DecreasePhotonFlow);
-            _starPlasmaIncreaseButton.onClick.AddListener(IncreaseStarPlasma);
-            _starPlasmaDecreaseButton.onClick.AddListener(DecreaseStarPlasma);
+            // Set up button click listeners
+            if (_biofluidIncreaseButton != null)
+            {
+                _biofluidIncreaseButton.onClick.AddListener(OnBiofluidIncrease);
+            }
+            if (_biofluidDecreaseButton != null)
+            {
+                _biofluidDecreaseButton.onClick.AddListener(OnBiofluidDecrease);
+            }
+            if (_darkEnergyIncreaseButton != null)
+            {
+                _darkEnergyIncreaseButton.onClick.AddListener(OnDarkEnergyIncrease);
+            }
+            if (_darkEnergyDecreaseButton != null)
+            {
+                _darkEnergyDecreaseButton.onClick.AddListener(OnDarkEnergyDecrease);
+            }
+            if (_photonFlowIncreaseButton != null)
+            {
+                _photonFlowIncreaseButton.onClick.AddListener(OnPhotonFlowIncrease);
+            }
+            if (_photonFlowDecreaseButton != null)
+            {
+                _photonFlowDecreaseButton.onClick.AddListener(OnPhotonFlowDecrease);
+            }
+            if (_starPlasmaIncreaseButton != null)
+            {
+                _starPlasmaIncreaseButton.onClick.AddListener(OnStarPlasmaIncrease);
+            }
+            if (_starPlasmaDecreaseButton != null)
+            {
+                _starPlasmaDecreaseButton.onClick.AddListener(OnStarPlasmaDecrease);
+            }
+            if (_confirmButton != null)
+            {
+                _confirmButton.onClick.AddListener(OnConfirm);
+            }
 
-            UpdateTexts();
+            // Reset form values when the window is opened
+            ResetFormValues();
+            UpdateUI();
         }
 
-        private void Update()
+        private void OnEnable()
         {
-            if (_isBiofluidIncreasePressed)
-            {
-                _biofluidValue = _gameStats._biofluidForm;
-                UpdateTexts();
-            }
-            if (_isBiofluidDecreasePressed)
-            {
-                _biofluidValue = 0;
-                UpdateTexts();
-            }
-            if (_isDarkEnergyIncreasePressed)
-            {
-                _darkEnergyValue = _gameStats._darkEnergyForm;
-                UpdateTexts();
-            }
-            if (_isDarkEnergyDecreasePressed)
-            {
-                _darkEnergyValue = 0;
-                UpdateTexts();
-            }
-            if (_isPhotonFlowIncreasePressed)
-            {
-                _photonFlowValue = _gameStats._photonFlowForm;
-                UpdateTexts();
-            }
-            if (_isPhotonFlowDecreasePressed)
-            {
-                _photonFlowValue = 0;
-                UpdateTexts();
-            }
-            if (_isStarPlasmaIncreasePressed)
-            {
-                _starPlasmaValue = _gameStats._starPlasmaForm;
-                UpdateTexts();
-            }
-            if (_isStarPlasmaDecreasePressed)
-            {
-                _starPlasmaValue = 0;
-                UpdateTexts();
-            }
+            // Reset form values when the window is closed
+            ResetFormValues();
         }
 
-        private void IncreaseBiofluid()
+        public void UpdateUI()
         {
-            _biofluidValue = Mathf.Min(_biofluidValue + 1, _gameStats._biofluidForm);
-            UpdateTexts();
+            // Update the text fields with current values and max values
+            _biofluidText.text = $"{_biofluidValue}/{GameStats.Instance._biofluidForm}";
+            _darkEnergyText.text = $"{_darkEnergyValue}/{GameStats.Instance._darkEnergyForm}";
+            _photonFlowText.text = $"{_photonFlowValue}/{GameStats.Instance._photonFlowForm}";
+            _starPlasmaText.text = $"{_starPlasmaValue}/{GameStats.Instance._starPlasmaForm}";
+
+            // Update the points text fields
+            _biofluidPointsText.text = $"Points: {_consumer._pointForm.biofluidPoints}";
+            _darkEnergyPointsText.text = $"Points: {_consumer._pointForm.darkEnergyPoints}";
+            _photonFlowPointsText.text = $"Points: {_consumer._pointForm.photonFlowPoints}";
+            _starPlasmaPointsText.text = $"Points: {_consumer._pointForm.starPlasmaPoints}";
+
+            // Calculate total loaded points
+            int totalLoaded = (int)(_biofluidValue * _consumer._pointForm.biofluidPoints +
+                             _darkEnergyValue * _consumer._pointForm.darkEnergyPoints +
+                             _photonFlowValue * _consumer._pointForm.photonFlowPoints +
+                             _starPlasmaValue * _consumer._pointForm.starPlasmaPoints);
+
+            // Update the progress bar and text
+            _consumer.UpdateFormValues(_biofluidValue, _darkEnergyValue, _photonFlowValue, _starPlasmaValue);
+
+            // Disable increase buttons if total points reach 100
+            bool maxPointsReached = totalLoaded >= 100;
+            _biofluidIncreaseButton.interactable = !maxPointsReached;
+            _darkEnergyIncreaseButton.interactable = !maxPointsReached;
+            _photonFlowIncreaseButton.interactable = !maxPointsReached;
+            _starPlasmaIncreaseButton.interactable = !maxPointsReached;
         }
 
-        private void DecreaseBiofluid()
+        private void ChangeValue(ref int value, Text text, int maxValue, bool increase, int points)
         {
-            _biofluidValue = Mathf.Max(_biofluidValue - 1, 0);
-            UpdateTexts();
+            // Calculate total points before changing the value
+            int totalPointsBefore = (int)(_biofluidValue * _consumer._pointForm.biofluidPoints +
+                                   _darkEnergyValue * _consumer._pointForm.darkEnergyPoints +
+                                   _photonFlowValue * _consumer._pointForm.photonFlowPoints +
+                                   _starPlasmaValue * _consumer._pointForm.starPlasmaPoints);
+
+            if (increase)
+            {
+                // Check if adding points exceeds 100
+                if (totalPointsBefore + points <= 100)
+                {
+                    value = Mathf.Min(value + 1, maxValue);
+                }
+            }
+            else
+            {
+                value = Mathf.Max(value - 1, 0);
+            }
+
+            text.text = $"{value}/{maxValue}";
+            UpdateUI();
         }
 
-        private void IncreaseDarkEnergy()
+        // Button click handlers for increasing/decreasing values
+        public void OnBiofluidIncrease()
         {
-            _darkEnergyValue = Mathf.Min(_darkEnergyValue + 1, _gameStats._darkEnergyForm);
-            UpdateTexts();
+            ChangeValue(ref _biofluidValue, _biofluidText, GameStats.Instance._biofluidForm, true, (int)_consumer._pointForm.biofluidPoints);
+            Debug.Log($"Biofluid increased: {_biofluidValue}");
         }
 
-        private void DecreaseDarkEnergy()
+        public void OnBiofluidDecrease()
         {
-            _darkEnergyValue = Mathf.Max(_darkEnergyValue - 1, 0);
-            UpdateTexts();
+            ChangeValue(ref _biofluidValue, _biofluidText, GameStats.Instance._biofluidForm, false, (int)_consumer._pointForm.biofluidPoints);
+            Debug.Log($"Biofluid decreased: {_biofluidValue}");
         }
 
-        private void IncreasePhotonFlow()
+        public void OnDarkEnergyIncrease()
         {
-            _photonFlowValue = Mathf.Min(_photonFlowValue + 1, _gameStats._photonFlowForm);
-            UpdateTexts();
+            ChangeValue(ref _darkEnergyValue, _darkEnergyText, GameStats.Instance._darkEnergyForm, true, (int)_consumer._pointForm.darkEnergyPoints);
+            Debug.Log($"Dark Energy increased: {_darkEnergyValue}");
         }
 
-        private void DecreasePhotonFlow()
+        public void OnDarkEnergyDecrease()
         {
-            _photonFlowValue = Mathf.Max(_photonFlowValue - 1, 0);
-            UpdateTexts();
+            ChangeValue(ref _darkEnergyValue, _darkEnergyText, GameStats.Instance._darkEnergyForm, false, (int)_consumer._pointForm.darkEnergyPoints);
+            Debug.Log($"Dark Energy decreased: {_darkEnergyValue}");
         }
 
-        private void IncreaseStarPlasma()
+        public void OnPhotonFlowIncrease()
         {
-            _starPlasmaValue = Mathf.Min(_starPlasmaValue + 1, _gameStats._starPlasmaForm);
-            UpdateTexts();
+            ChangeValue(ref _photonFlowValue, _photonFlowText, GameStats.Instance._photonFlowForm, true, (int)_consumer._pointForm.photonFlowPoints);
+            Debug.Log($"Photon Flow increased: {_photonFlowValue}");
         }
 
-        private void DecreaseStarPlasma()
+        public void OnPhotonFlowDecrease()
         {
-            _starPlasmaValue = Mathf.Max(_starPlasmaValue - 1, 0);
-            UpdateTexts();
+            ChangeValue(ref _photonFlowValue, _photonFlowText, GameStats.Instance._photonFlowForm, false, (int)_consumer._pointForm.photonFlowPoints);
+            Debug.Log($"Photon Flow decreased: {_photonFlowValue}");
         }
 
-        private void UpdateTexts()
+        public void OnStarPlasmaIncrease()
         {
-            _biofluidText.text = $"{_biofluidValue}/{_gameStats._biofluidForm}";
-            _darkEnergyText.text = $"{_darkEnergyValue}/{_gameStats._darkEnergyForm}";
-            _photonFlowText.text = $"{_photonFlowValue}/{_gameStats._photonFlowForm}";
-            _starPlasmaText.text = $"{_starPlasmaValue}/{_gameStats._starPlasmaForm}";
+            ChangeValue(ref _starPlasmaValue, _starPlasmaText, GameStats.Instance._starPlasmaForm, true, (int)_consumer._pointForm.starPlasmaPoints);
+            Debug.Log($"Star Plasma increased: {_starPlasmaValue}");
         }
 
-        public void OnPointerDown(PointerEventData eventData)
+        public void OnStarPlasmaDecrease()
         {
-            if (eventData.pointerPress == _biofluidIncreaseButton.gameObject)
-            {
-                _isBiofluidIncreasePressed = true;
-            }
-            else if (eventData.pointerPress == _biofluidDecreaseButton.gameObject)
-            {
-                _isBiofluidDecreasePressed = true;
-            }
-            else if (eventData.pointerPress == _darkEnergyIncreaseButton.gameObject)
-            {
-                _isDarkEnergyIncreasePressed = true;
-            }
-            else if (eventData.pointerPress == _darkEnergyDecreaseButton.gameObject)
-            {
-                _isDarkEnergyDecreasePressed = true;
-            }
-            else if (eventData.pointerPress == _photonFlowIncreaseButton.gameObject)
-            {
-                _isPhotonFlowIncreasePressed = true;
-            }
-            else if (eventData.pointerPress == _photonFlowDecreaseButton.gameObject)
-            {
-                _isPhotonFlowDecreasePressed = true;
-            }
-            else if (eventData.pointerPress == _starPlasmaIncreaseButton.gameObject)
-            {
-                _isStarPlasmaIncreasePressed = true;
-            }
-            else if (eventData.pointerPress == _starPlasmaDecreaseButton.gameObject)
-            {
-                _isStarPlasmaDecreasePressed = true;
-            }
+            ChangeValue(ref _starPlasmaValue, _starPlasmaText, GameStats.Instance._starPlasmaForm, false, (int)_consumer._pointForm.starPlasmaPoints);
+            Debug.Log($"Star Plasma decreased: {_starPlasmaValue}");
         }
 
-        public void OnPointerUp(PointerEventData eventData)
+        public void OnConfirm()
         {
-            if (eventData.pointerPress == _biofluidIncreaseButton.gameObject)
+            // Calculate total points
+            int totalPoints = (int)(_biofluidValue * _consumer._pointForm.biofluidPoints +
+                             _darkEnergyValue * _consumer._pointForm.darkEnergyPoints +
+                             _photonFlowValue * _consumer._pointForm.photonFlowPoints +
+                             _starPlasmaValue * _consumer._pointForm.starPlasmaPoints);
+
+            // If total points exceed 100, set them to 100
+            if (totalPoints > 100)
             {
-                _isBiofluidIncreasePressed = false;
+                totalPoints = 100;
             }
-            else if (eventData.pointerPress == _biofluidDecreaseButton.gameObject)
-            {
-                _isBiofluidDecreasePressed = false;
-            }
-            else if (eventData.pointerPress == _darkEnergyIncreaseButton.gameObject)
-            {
-                _isDarkEnergyIncreasePressed = false;
-            }
-            else if (eventData.pointerPress == _darkEnergyDecreaseButton.gameObject)
-            {
-                _isDarkEnergyDecreasePressed = false;
-            }
-            else if (eventData.pointerPress == _photonFlowIncreaseButton.gameObject)
-            {
-                _isPhotonFlowIncreasePressed = false;
-            }
-            else if (eventData.pointerPress == _photonFlowDecreaseButton.gameObject)
-            {
-                _isPhotonFlowDecreasePressed = false;
-            }
-            else if (eventData.pointerPress == _starPlasmaIncreaseButton.gameObject)
-            {
-                _isStarPlasmaIncreasePressed = false;
-            }
-            else if (eventData.pointerPress == _starPlasmaDecreaseButton.gameObject)
-            {
-                _isStarPlasmaDecreasePressed = false;
-            }
+
+            _consumer.ConfirmFormValues(_biofluidValue, _darkEnergyValue, _photonFlowValue, _starPlasmaValue);
+
+            // Subtract the selected forms from the available forms
+            GameStats.Instance.SpendForm(_biofluidValue, _darkEnergyValue, _photonFlowValue, _starPlasmaValue);
+
+            // Confirm the form values
+
+            // Hide the specified objects
+            _objectToHide1.SetActive(false);
+            _objectToHide2.SetActive(false);
+            _objectToHide3.SetActive(false);
+
+            // Show the specified objects
+            _objectToShow1.SetActive(true);
+            _objectToShow2.SetActive(true);
+
+            // Start the timer
+            _timer.StartTimer();
+        }
+
+        private void ResetFormValues()
+        {
+            _biofluidValue = 0;
+            _darkEnergyValue = 0;
+            _photonFlowValue = 0;
+            _starPlasmaValue = 0;
+
+            // Reset the UI elements
+            if (_biofluidText != null) _biofluidText.text = $"{_biofluidValue}/{GameStats.Instance._biofluidForm}";
+            if (_darkEnergyText != null) _darkEnergyText.text = $"{_darkEnergyValue}/{GameStats.Instance._darkEnergyForm}";
+            if (_photonFlowText != null) _photonFlowText.text = $"{_photonFlowValue}/{GameStats.Instance._photonFlowForm}";
+            if (_starPlasmaText != null) _starPlasmaText.text = $"{_starPlasmaValue}/{GameStats.Instance._starPlasmaForm}";
+
+            // Reset the points text fields
+            if (_biofluidPointsText != null) _biofluidPointsText.text = $"Points: {_consumer._pointForm.biofluidPoints}";
+            if (_darkEnergyPointsText != null) _darkEnergyPointsText.text = $"Points: {_consumer._pointForm.darkEnergyPoints}";
+            if (_photonFlowPointsText != null) _photonFlowPointsText.text = $"Points: {_consumer._pointForm.photonFlowPoints}";
+            if (_starPlasmaPointsText != null) _starPlasmaPointsText.text = $"Points: {_consumer._pointForm.starPlasmaPoints}";
+        }
+
+        private void UpdateTimerText(float currentTime)
+        {
+            float remainingTime = _timer.GetRemainingTime();
+            _timerText.text = $"Îñòàëîñü âðåìåíè: {Mathf.CeilToInt(remainingTime)} ñåê.";
+        }
+
+        private void OnTimerComplete()
+        {
+            // Check and award antimatter
+            _consumer.CheckAndAwardAntimatter();
+
+            // Hide the specified objects
+            _objectToShow1.SetActive(false);
+            _objectToShow2.SetActive(false);
+
+            // Show the specified objects
+            _objectToHide1.SetActive(true);
+            _objectToHide2.SetActive(true);
+            _objectToHide3.SetActive(true);
         }
     }
 }

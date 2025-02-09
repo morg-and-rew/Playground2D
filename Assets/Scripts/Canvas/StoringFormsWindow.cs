@@ -8,10 +8,10 @@ namespace Playground2D.Canvas.StoringFormsWindows
 {
     public class StoringFormsWindow : MonoBehaviour
     {
-        [SerializeField] private Text _biofluidText;
-        [SerializeField] private Text _darkEnergyText;
         [SerializeField] private Text _photonFlowText;
         [SerializeField] private Text _starPlasmaText;
+        [SerializeField] private Text _biofluidText;
+        [SerializeField] private Text _darkEnergyText;
 
         [SerializeField] private GameStats _gameStats;
 

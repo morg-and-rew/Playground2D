@@ -1,15 +1,15 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
 namespace Playground2D.Game.Stats
 {
     public class GameStats : MonoBehaviour, ICollectble
     {
-        [field: SerializeField] public int _biofluidForm { get; private set; } = 0;
-        [field: SerializeField] public int _darkEnergyForm { get; private set; } = 0;
+        public static GameStats Instance { get; private set; }
+
         [field: SerializeField] public int _photonFlowForm { get; private set; } = 0;
         [field: SerializeField] public int _starPlasmaForm { get; private set; } = 0;
+        [field: SerializeField] public int _biofluidForm { get; private set; } = 0;
+        [field: SerializeField] public int _darkEnergyForm { get; private set; } = 0;
         [field: SerializeField] public int _antiMaterial { get; private set; } = 0;
 
         public delegate void FormChanged(int newValue);
@@ -18,6 +18,12 @@ namespace Playground2D.Game.Stats
         public static event FormChanged OnPhotonFlowFormChanged;
         public static event FormChanged OnStarPlasmaFormChanged;
         public static event FormChanged OnAntiMaterialChanged;
+
+        private void Awake()
+        {
+            if (Instance == null)
+                Instance = this;
+        }
 
         public void CollectForm(int biofluid = 0, int darkEnergy = 0, int photonFlow = 0, int starPlasma = 0, int antiMaterial = 0)
         {

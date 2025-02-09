@@ -6,113 +6,257 @@ namespace Playground2D.Canvas.StationStoreWindows
 {
     public class StationStoreWindow : MonoBehaviour
     {
-        [SerializeField] private GameStats _gameStats;
+        [SerializeField] private StationStore _stationStore;
 
-        // Цены и названия для каждого предмета
-        [SerializeField] private int _item1Price = 10;
-        [SerializeField] private string _item1Name = "Item 1";
-        [SerializeField] private int _item2Price = 20;
-        [SerializeField] private string _item2Name = "Item 2";
-        [SerializeField] private int _item3Price = 30;
-        [SerializeField] private string _item3Name = "Item 3";
-        [SerializeField] private int _item4Price = 40;
-        [SerializeField] private string _item4Name = "Item 4";
-
-        // Ссылки на кнопки в интерфейсе
         [SerializeField] private Button _buyItem1Button;
         [SerializeField] private Button _buyItem2Button;
         [SerializeField] private Button _buyItem3Button;
         [SerializeField] private Button _buyItem4Button;
         [SerializeField] private Button _enterStoreButton;
 
-        // Ссылки на окна
+        [SerializeField] private Image _item2Image;
+        [SerializeField] private Image _item3Image;
+        [SerializeField] private Image _item4Image;
+
         [SerializeField] private GameObject _insufficientFundsWindow;
         [SerializeField] private GameObject _confirmationWindow;
         [SerializeField] private GameObject _storingFormsWindow;
 
-        // Ссылки на кнопки в окне подтверждения
         [SerializeField] private Button _confirmYesButton;
         [SerializeField] private Button _confirmNoButton;
 
-        // Ссылка на текстовое поле в окне подтверждения
         [SerializeField] private Text _confirmationText;
+
+        [SerializeField] private GameObject _newItem1;
+        [SerializeField] private GameObject _newItem2;
+        [SerializeField] private GameObject _newItem3;
+        [SerializeField] private GameObject _newItem4;
+
+        [SerializeField] private GameObject _newItem5;//текст недоступен
+        [SerializeField] private GameObject _newItem6;
+        [SerializeField] private GameObject _newItem7;
+
+        [SerializeField] private Text _item1PriceText;
+        [SerializeField] private Text _item2PriceText;
+        [SerializeField] private Text _item3PriceText;
+        [SerializeField] private Text _item4PriceText;
 
         private int _selectedItemPrice;
         private Button _selectedItemButton;
-        private string _selectedItemName;
+        private StationStore.Item _selectedItem;
 
-        void Start()
+        private void Start()
         {
-            // Назначаем методы для кнопок
-            _buyItem1Button.onClick.AddListener(() => TryBuyItem(_item1Price, _item1Name, _buyItem1Button));
-            _buyItem2Button.onClick.AddListener(() => TryBuyItem(_item2Price, _item2Name, _buyItem2Button));
-            _buyItem3Button.onClick.AddListener(() => TryBuyItem(_item3Price, _item3Name, _buyItem3Button));
-            _buyItem4Button.onClick.AddListener(() => TryBuyItem(_item4Price, _item4Name, _buyItem4Button));
-            _enterStoreButton.onClick.AddListener(CloseInsufficientFundsWindow);
-            _enterStoreButton.onClick.AddListener(EnterStore);
+            if (_stationStore == null)
+            {
+                return;
+            }
 
-            _confirmYesButton.onClick.AddListener(ConfirmPurchase);
-            _confirmNoButton.onClick.AddListener(CancelPurchase);
+            if (_stationStore.items.Length >= 1 && _buyItem1Button != null && _item1PriceText != null)
+            {
+                _buyItem1Button.onClick.AddListener(() => TryBuyItem(_stationStore.items[0]));
+                _item1PriceText.text = $"{_stationStore.items[0].price}";
+            }
+            if (_stationStore.items.Length >= 2 && _buyItem2Button != null && _item2PriceText != null)
+            {
+                _buyItem2Button.onClick.AddListener(() => TryBuyItem(_stationStore.items[1]));
+                _item2PriceText.text = $"{_stationStore.items[1].price}";
+            }
+            if (_stationStore.items.Length >= 3 && _buyItem3Button != null && _item3PriceText != null)
+            {
+                _buyItem3Button.onClick.AddListener(() => TryBuyItem(_stationStore.items[2]));
+                _item3PriceText.text = $"{_stationStore.items[2].price}";
+            }
+            if (_stationStore.items.Length >= 4 && _buyItem4Button != null && _item4PriceText != null)
+            {
+                _buyItem4Button.onClick.AddListener(() => TryBuyItem(_stationStore.items[3]));
+                _item4PriceText.text = $"{_stationStore.items[3].price}";
+            }
 
-            // Скрываем окна и текст при старте
-            _insufficientFundsWindow.SetActive(false);
-            _confirmationWindow.SetActive(false);
-            _storingFormsWindow.SetActive(false);
-            _confirmationText.gameObject.SetActive(false);
+            if (_enterStoreButton != null)
+            {
+                _enterStoreButton.onClick.AddListener(CloseInsufficientFundsWindow);
+                _enterStoreButton.onClick.AddListener(EnterStore);
+            }
+
+            if (_confirmYesButton != null)
+            {
+                _confirmYesButton.onClick.AddListener(ConfirmPurchase);
+            }
+
+            if (_confirmNoButton != null)
+            {
+                _confirmNoButton.onClick.AddListener(CancelPurchase);
+            }
+
+            if (_insufficientFundsWindow != null)
+            {
+                _insufficientFundsWindow.SetActive(false);
+            }
+
+            if (_confirmationWindow != null)
+            {
+                _confirmationWindow.SetActive(false);
+            }
+
+            if (_storingFormsWindow != null)
+            {
+                _storingFormsWindow.SetActive(false);
+            }
+
+            if (_confirmationText != null)
+            {
+                _confirmationText.gameObject.SetActive(false);
+            }
+
+            if (_item2Image != null)
+            {
+                _item2Image.gameObject.SetActive(true);
+            }
+
+            if (_item3Image != null)
+            {
+                _item3Image.gameObject.SetActive(true);
+            }
+
+            if (_item4Image != null)
+            {
+                _item4Image.gameObject.SetActive(true);
+            }
+
+            if (_newItem1 != null)
+            {
+                _newItem1.SetActive(false);
+            }
+
+            if (_newItem2 != null)
+            {
+                _newItem2.SetActive(false);
+            }
+
+            if (_newItem3 != null)
+            {
+                _newItem3.SetActive(false);
+            }
+
+            if (_newItem4 != null)
+            {
+                _newItem4.SetActive(false);
+            }
+
+            if (_newItem5 != null)
+            {
+                _newItem5.SetActive(true);
+            }
+
+            if (_newItem6 != null)
+            {
+                _newItem6.SetActive(true);
+            }
+
+            if (_newItem7 != null)
+            {
+                _newItem7.SetActive(true);
+            }
         }
 
-        private void TryBuyItem(int price, string itemName, Button itemButton)
+        private void TryBuyItem(StationStore.Item item)
         {
-            if (_gameStats._antiMaterial >= price)
+            if (item == null)
             {
-                // Показываем окно подтверждения
-                _selectedItemPrice = price;
-                _selectedItemButton = itemButton;
-                _selectedItemName = itemName;
-                _confirmationText.text = $"Купить {itemName} за {price}?";
+                Debug.LogError("Item is null.");
+                return;
+            }
+
+            if (GameStats.Instance._antiMaterial >= item.price)
+            {
+                _selectedItemPrice = item.price;
+                _selectedItemButton = GetButtonForItem(item);
+                _selectedItem = item;
+                _confirmationText.text = $"Купить {item.name} за {item.price}?";
                 _confirmationText.gameObject.SetActive(true);
                 _confirmationWindow.SetActive(true);
             }
             else
             {
-                // Показываем окно с предложением купить монеты
                 _insufficientFundsWindow.SetActive(true);
             }
         }
 
+        private Button GetButtonForItem(StationStore.Item item)
+        {
+            if (item == _stationStore.items[0])
+            {
+                return _buyItem1Button;
+            }
+            else if (item == _stationStore.items[1])
+            {
+                return _buyItem2Button;
+            }
+            else if (item == _stationStore.items[2])
+            {
+                return _buyItem3Button;
+            }
+            else if (item == _stationStore.items[3])
+            {
+                return _buyItem4Button;
+            }
+            return null;
+        }
+
         private void ConfirmPurchase()
         {
-            // Уменьшаем количество _antiMaterial
-            _gameStats.SpendForm(antiMaterial: _selectedItemPrice);
+            if (_selectedItem == null)
+            {
+                Debug.LogError("Selected item is null.");
+                return;
+            }
 
-            // Скрываем окно подтверждения и текст
+            GameStats.Instance.SpendForm(antiMaterial: _selectedItemPrice);
+
             _confirmationWindow.SetActive(false);
             _confirmationText.gameObject.SetActive(false);
 
-            // Удаляем кнопку покупки
             Destroy(_selectedItemButton.gameObject);
 
-            // Закрываем весь объект
-            gameObject.SetActive(false);
+            if (_selectedItem == _stationStore.items[0])
+            {
+                _item2Image.gameObject.SetActive(false);
+                _newItem5.SetActive(false);
+                _newItem1.SetActive(true);
+            }
+            else if (_selectedItem == _stationStore.items[1])
+            {
+                _item3Image.gameObject.SetActive(false);
+                _newItem6.SetActive(false);
+                _newItem2.SetActive(true);
+            }
+            else if (_selectedItem == _stationStore.items[2])
+            {
+                _item4Image.gameObject.SetActive(false);
+                _newItem7.SetActive(false);
+                _newItem3.SetActive(true);
+            }
+            else if (_selectedItem == _stationStore.items[3])
+            {
+                _newItem4.SetActive(true);
+            }
         }
 
         private void CancelPurchase()
         {
-            // Скрываем окно подтверждения и текст
             _confirmationWindow.SetActive(false);
             _confirmationText.gameObject.SetActive(false);
         }
 
         public void CloseInsufficientFundsWindow()
         {
-            // Скрываем окно с предложением купить монеты
             _insufficientFundsWindow.SetActive(false);
             gameObject.SetActive(false);
         }
 
         private void EnterStore()
         {
-            // Показываем окно StoringFormsWindow
             _storingFormsWindow.SetActive(true);
         }
     }
